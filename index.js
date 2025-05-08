@@ -25,8 +25,12 @@ app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// CORS configuration
-const allowedOrigins = [process.env.CLIENT_URL, 'https://foodrescuefrontend.vercel.app'];
+// CORS configuration: allow localhost dev and production origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.CLIENT_URL,
+  'https://foodrescuefrontend.vercel.app'
+];
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
