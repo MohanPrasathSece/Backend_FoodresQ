@@ -24,14 +24,18 @@ const app = express();
 // Request logging for debugging
 app.use(morgan('dev'));
 
-// CORS configuration: allow dev and prod, handle preflight
-const allowedOrigins = ['http://localhost:3000', process.env.CLIENT_URL, 'https://foodrescuefrontend.vercel.app'];
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
-}));
+// CORS configuration: allow all origins (temp debug)
+app.use((req, res, next) => {
+  console.log('Request Origin:', req.header('Origin'));
+  next();
+});
+app.use(cors({ origin: true, credentials: true }));
+
+// Health check endpoint for debugging connectivity
+app.options('*', cors()); // preflight
+app.get('/api/ping', (req, res) => {
+  res.json({ alive: true, time: new Date().toISOString() });
+});
 
 // Middleware
 app.use(express.json());
