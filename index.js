@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { sendEmail } = require('./services/emailService');
+const morgan = require('morgan');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -20,21 +21,22 @@ console.log('Environment variables loaded:', {
 
 const app = express();
 
+// Request logging for debugging
+app.use(morgan('dev'));
+
+// CORS configuration: allow dev and prod, handle preflight
+const allowedOrigins = ['http://localhost:3000', process.env.CLIENT_URL, 'https://foodrescuefrontend.vercel.app'];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
+}));
+
 // Middleware
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// CORS configuration: allow localhost dev and production origins
-const allowedOrigins = [
-  'http://localhost:3000',
-  process.env.CLIENT_URL,
-  'https://foodrescuefrontend.vercel.app'
-];
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
