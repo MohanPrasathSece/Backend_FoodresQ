@@ -13,14 +13,9 @@ router.get('/', auth, async (req, res) => {
   console.log('Incoming GET /api/profile for user:', req.user._id);
   try {
     let profile = await Profile.findOne({ userId: req.user._id });
-    if (!profile) {
-      // Create default profile for new user
-      profile = await Profile.create({ userId: req.user._id });
-      console.log('Created default profile for user:', req.user._id);
-    }
+    if (!profile) return res.status(404).json({ message: 'Profile not found' });
     res.json(profile);
   } catch (err) {
-    console.error('Error fetching profile for user:', req.user._id, err);
     res.status(500).json({ message: 'Error fetching profile', error: err.message });
   }
 });
