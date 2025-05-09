@@ -10,6 +10,7 @@ const upload = multer({ storage, limits: { fileSize: 2 * 1024 * 1024 } });
 
 // Get current user's profile
 router.get('/', auth, async (req, res) => {
+  console.log('Incoming GET /api/profile for user:', req.user._id);
   try {
     let profile = await Profile.findOne({ userId: req.user._id });
     if (!profile) return res.status(404).json({ message: 'Profile not found' });
@@ -21,6 +22,8 @@ router.get('/', auth, async (req, res) => {
 
 // Create or update profile (with optional avatar upload)
 router.post('/', auth, upload.single('avatar'), async (req, res) => {
+  console.log('Incoming POST /api/profile, body:', req.body);
+  console.log('Incoming POST /api/profile, file:', req.file);
   try {
     // Build update data
     const updateData = { userId: req.user._id, updatedAt: new Date() };
@@ -45,8 +48,10 @@ router.post('/', auth, upload.single('avatar'), async (req, res) => {
       updateData,
       { upsert: true, new: true }
     );
+    console.log('Profile upsert result:', profile);
     res.json(profile);
   } catch (err) {
+    console.error('Error in POST /api/profile:', err);
     res.status(400).json({ message: 'Error saving profile', error: err.message });
   }
 });

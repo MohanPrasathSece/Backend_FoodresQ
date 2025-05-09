@@ -24,12 +24,12 @@ const app = express();
 // Request logging for debugging
 app.use(morgan('dev'));
 
-// CORS configuration: allow all origins (temp debug)
+// CORS configuration: restrict to frontend URL
 app.use((req, res, next) => {
   console.log('Request Origin:', req.header('Origin'));
   next();
 });
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 // Health check endpoint for debugging connectivity
 app.options('*', cors()); // preflight
